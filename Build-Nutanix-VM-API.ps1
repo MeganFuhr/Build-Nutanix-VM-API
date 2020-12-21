@@ -1,5 +1,4 @@
 begin{
-	Add-PSSnapin nutanixcmdletspssnapin
 	$VMName = "VMName"
     
 #Certificate information to call Nutanix Prism API
@@ -26,7 +25,9 @@ $BuildCluster = "PrismElement.YourCompany.com"
 $NutanixHostingConnection = Get-Content -Path "\\path\to\your\clusters\NTNXCluster.txt"
 $allNutanixVMs = @()
 
-#get all nutanix VMS across all the clusters. Create a custom object to include the cluster name
+#Reused code from another script
+#If all your clusters are NOT in Prism Central, need to query all clusters to ensure not duplicate object name
+#This can be removed if you do not need to check
 foreach ($connection in $NutanixHostingConnection) {
 
 	$NTNXVMsUri = "https://$($connection):9440/PrismGateway/services/rest/v2.0/vms"
@@ -43,6 +44,7 @@ foreach ($connection in $NutanixHostingConnection) {
 		} 
 }
 
+#Exit if an object with the same name exists
 if ($allNutanixVMs.vmname -contains $VMName) {
     Write-Host "$VMName Nutanix object already exists on another cluster."
     $LastExitCode = 1
